@@ -1,6 +1,6 @@
 import {
-    VerticalTimeline,
-    VerticalTimelineElement,
+	VerticalTimeline,
+	VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 
 import { experiences } from "../constants";
@@ -21,30 +21,38 @@ const WorkExperience = () => {
 
         <div className='mt-8 md:mt-12 flex'>
           <VerticalTimeline layout='2-columns' lineColor='#e5e7eb'>
-            {experiences.map((experience) => (
-              <VerticalTimelineElement
-                key={experience.company_name}
-                date={experience.date}
-                iconStyle={{ background: experience.iconBg }}
-                icon={
-                  <div className='flex justify-center items-center w-full h-full'>
-                    <img
-                      src={experience.icon}
-                      alt={experience.company_name}
-                      className='w-[60%] h-[60%] object-contain'
-                    />
-                  </div>
-                }
-                contentStyle={{
-                  background: "rgba(255,255,255,0.95)",
-                  borderRadius: 12,
-                  borderBottom: "8px",
-                  borderStyle: "solid",
-                  borderBottomColor: experience.iconBg,
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-                }}
-                contentArrowStyle={{ borderRight: "7px solid rgba(255,255,255,0.95)" }}
-              >
+            {experiences.map((experience, index) => {
+              const position = index % 2 === 0 ? 'right' : 'left';
+              const arrowStyle =
+                position === 'right'
+                  ? { borderLeft: '7px solid rgba(255,255,255,0.95)' }
+                  : { borderRight: '7px solid rgba(255,255,255,0.95)' };
+
+              return (
+                <VerticalTimelineElement
+                  key={experience.company_name}
+                  position={position}
+                  date={experience.date}
+                  iconStyle={{ background: experience.iconBg }}
+                  icon={
+                    <div className='flex justify-center items-center w-full h-full'>
+                      <img
+                        src={experience.icon}
+                        alt={experience.company_name}
+                        className='w-[60%] h-[60%] object-contain'
+                      />
+                    </div>
+                  }
+                  contentStyle={{
+                    background: "rgba(255,255,255,0.95)",
+                    borderRadius: 12,
+                    borderBottom: "8px",
+                    borderStyle: "solid",
+                    borderBottomColor: experience.iconBg,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                  }}
+                  contentArrowStyle={arrowStyle}
+                >
                 <div>
                   <h3 className='text-black text-xl font-poppins font-semibold'>
                     {experience.title}
@@ -67,8 +75,9 @@ const WorkExperience = () => {
                     </li>
                   ))}
                 </ul>
-              </VerticalTimelineElement>
-            ))}
+                </VerticalTimelineElement>
+              );
+            })}
           </VerticalTimeline>
         </div>
       </div>

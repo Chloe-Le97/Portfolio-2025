@@ -1,5 +1,6 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 import { arrow, soundoff, soundon } from "../assets/icons";
 import sakura from "../assets/sakura.mp3";
@@ -8,6 +9,38 @@ import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
 import { Bird, Island, Sky, Witch } from "../models";
+
+// Watcher to auto-hide crystal if it stays off-screen for 1s
+function CrystalVisibilityWatcher({ position, onHide }) {
+  const { camera } = useThree();
+  const timeoutRef = useRef(null);
+
+  useFrame(() => {
+    if (!position) return;
+    const world = new THREE.Vector3(position[0], position[1], position[2]);
+    const ndc = world.clone().project(camera);
+    const inView = ndc.x >= -1 && ndc.x <= 1 && ndc.y >= -1 && ndc.y <= 1 && ndc.z >= 0 && ndc.z <= 1;
+    if (!inView) {
+      if (!timeoutRef.current) {
+        timeoutRef.current = setTimeout(() => {
+          onHide();
+          timeoutRef.current = null;
+        }, 1000);
+      }
+    } else if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  });
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return null;
+}
 
 const Home = () => {
   const audioRef = useRef(new Audio(sakura));
@@ -23,6 +56,10 @@ const Home = () => {
   const [isWheelBlocked, setIsWheelBlocked] = useState(false);
   const panelRef = useRef(null);
   const [requestedStage, setRequestedStage] = useState(null);
+  const witchRef = useRef(null);
+  const [crystalVisible, setCrystalVisible] = useState(false);
+  const [panelReady, setPanelReady] = useState(false);
+  const crystalRef = useRef(null);
   const [showScrollHint, setShowScrollHint] = useState(true);
 
   useEffect(() => {
@@ -50,11 +87,33 @@ const Home = () => {
     }
   }, [currentStage]);
 
+  // When stage changes, show crystal immediately; delay right-side panels by 1s
+  useEffect(() => {
+    if (currentStage && currentStage >= 2 && currentStage <= 4) {
+      setCrystalVisible(true);
+      setPanelReady(false);
+      const t = setTimeout(() => setPanelReady(true), 500);
+      return () => clearTimeout(t);
+    } else {
+      setCrystalVisible(false);
+      setPanelReady(false);
+    }
+  }, [currentStage]);
+
   // Unified wheel handling: scroll panel first, then rotate model at edges
   useEffect(() => {
     const handleUnifiedWheel = (e) => {
       // hide hint on any wheel interaction
       if (showScrollHint) setShowScrollHint(false);
+
+      // During crystal pre-panel phase, block rotation completely
+      if (crystalVisible && !panelReady) {
+        setIsWheelBlocked(true);
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        return;
+      }
       const panel = panelRef.current;
       if (!panel) {
         setIsWheelBlocked(false);
@@ -164,13 +223,13 @@ const Home = () => {
       )}
 
       {/* Right side panels */}
-      {currentStage === 2 && (
+      {currentStage === 2 && panelReady && (
         <div ref={panelRef} className='absolute right-0 top-0 h-full w-full md:w-[40%] z-20 bg-transparent overflow-y-auto p-4 md:p-6 -translate-y-5'>
           <SkillsPanel />
         </div>
       )}
 
-      {currentStage === 3 && (
+      {currentStage === 3 && panelReady && (
         <div ref={panelRef} className='absolute right-0 top-[-20px] md:top-[-40px] h-full w-full md:w-[55%] lg:w-[50%] z-20 bg-transparent overflow-y-auto p-4 md:p-6 -translate-y-5'>
           <WorkExperience />
         </div>
@@ -178,9 +237,9 @@ const Home = () => {
 
       {/* Slide-in Projects panel on the right for stage 4 */}
       <div
-        ref={currentStage === 4 ? panelRef : null}
+        ref={currentStage === 4 && panelReady ? panelRef : null}
         className={`absolute right-0 top-0 h-full z-20 bg-white/80 backdrop-blur-sm overflow-y-auto p-2 md:p-4 transition-transform duration-500 ease-out -translate-y-5 ${
-          currentStage === 4 ? "translate-x-0 w-full md:w-[40%]" : "translate-x-full w-0"
+          currentStage === 4 && panelReady ? "translate-x-0 w-full md:w-[40%]" : "translate-x-full w-0"
         }`}
       >
         <ProjectsPanel />
@@ -194,7 +253,7 @@ const Home = () => {
       >
         <Suspense fallback={<Loader />}>
           {/* Softer exponential fog */}
-          <fogExp2 attach="fog" args={["#dbe9ff", 0.0007]} />
+          <fogExp2 attach="fog" args={["#dbe9ff", 0.0008]} />
           <directionalLight position={[1, 1, 1]} intensity={2} />
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 5, 10]} intensity={2} />
@@ -221,19 +280,34 @@ const Home = () => {
             setIsRotating={setIsRotating}
             setCurrentStage={setCurrentStage}
             currentStage={currentStage}
+            crystalRef={crystalRef}
+            showCrystal={crystalVisible}
             position={[islandPositionAdj[0], islandPositionAdj[1] + yScreenLift, islandPositionAdj[2]]}
             rotation={[0.1, 4.7077, 0]}
             scale={islandScaleAdj}
-            isWheelBlocked={isWheelBlocked}
+            isWheelBlocked={isWheelBlocked || (crystalVisible && !panelReady)}
             requestedStage={requestedStage}
             onStageAligned={() => setRequestedStage(null)}
           />
+          {/* Crystal now rendered inside Island per stage */}
           <Witch
             isRotating={isRotating}
+            currentStage={currentStage}
+            outerRef={witchRef}
             position={[biplanePositionAdj[0], biplanePositionAdj[1] + yScreenLift, biplanePositionAdj[2]]}
             rotation={[0, 20.1, 0]}
             scale={biplaneScaleAdj}
           />
+          {crystalVisible && crystalRef.current && (
+            <CrystalVisibilityWatcher
+              position={(function() {
+                const p = new THREE.Vector3();
+                crystalRef.current.getWorldPosition(p);
+                return [p.x, p.y, p.z];
+              })()}
+              onHide={() => setCrystalVisible(false)}
+            />
+          )}
         </Suspense>
       </Canvas>
 

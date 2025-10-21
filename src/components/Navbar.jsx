@@ -9,7 +9,7 @@ const Navbar = () => {
         <img src={logo} alt='logo' className='w-18 h-18 object-contain' />
       </NavLink>
       <nav className='flex text-lg gap-7 font-medium'>
-        <NavLink to='/contact' className={({ isActive }) => isActive ? "text-blue-600" : "text-black"}>
+        <NavLink to='/contact' className={({ isActive }) => isActive ? "text-blue-600" : "text-white"}>
           Contact
         </NavLink>
       </nav>

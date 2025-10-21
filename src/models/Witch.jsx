@@ -7,7 +7,7 @@ import witchScene from "../assets/3d/witch.glb";
 // Model: Flying Witch
 // Source: https://sketchfab.com/3d-models/flying-witch-e1d759b3ed3e4eeb9f7912931bf12b35
 // Author: walczak (CC-BY-4.0)
-export function Witch({ isRotating, ...props }) {
+export function Witch({ isRotating, currentStage, outerRef, ...props }) {
   const ref = useRef();
   const { scene, animations } = useGLTF(witchScene);
   const { actions } = useAnimations(animations, ref);
@@ -20,14 +20,17 @@ export function Witch({ isRotating, ...props }) {
     else action.stop();
   }, [actions, isRotating]);
 
-  // Position the model and rotate 60° right
+  // Absolute transforms to avoid cumulative changes on re-mount
   useEffect(() => {
     scene.traverse((obj) => {
       obj.frustumCulled = false;
     });
-    scene.position.y += 0.6;
+    // Set fixed offsets (not additive) so navigation does not accumulate
+    scene.position.y = 0.6;
     scene.scale.setScalar(0.35);
-    scene.rotation.y -= Math.PI / 1.5;
+    // Fixed yaw: slightly more to the right (~99°)
+    const yaw = -Math.PI * 0.6;
+    scene.rotation.set(scene.rotation.x, yaw, scene.rotation.z);
   }, [scene]);
 
   // Gentle flight movement akin to Plane/Bird feel (subtle bob/sway)
@@ -41,7 +44,16 @@ export function Witch({ isRotating, ...props }) {
   });
 
   return (
-    <mesh {...props} ref={ref}>
+    <mesh
+      {...props}
+      ref={(node) => {
+        ref.current = node;
+        if (outerRef) {
+          if (typeof outerRef === "function") outerRef(node);
+          else outerRef.current = node;
+        }
+      }}
+    >
       <primitive object={scene} />
     </mesh>
   );

@@ -26,6 +26,8 @@ export function Island({
   isWheelBlocked,
   requestedStage,
   onStageAligned,
+  outerRef,
+  crystalRef,
   ...props
 }) {
   const islandRef = useRef();
@@ -262,9 +264,27 @@ export function Island({
     }
   });
 
+  // Stage-anchored crystal positions (local to island), biased closer to camera
+  // Tuned guesses; adjust per feedback
+  const stageAnchors = {
+    2: [-20.6, 11.6, -24.6],
+    3: [-26.4, 11.6, 13.8],
+    4: [16.6, 11.6, 21.5],
+  };
+  const crystalPos = stageAnchors[currentStage] || null;
+
   return (
     // {Island 3D model from: https://sketchfab.com/3d-models/foxs-islands-163b68e09fcc47618450150be7785907}
-    <a.group ref={islandRef} {...props}>
+    <a.group
+      ref={(node) => {
+        islandRef.current = node;
+        if (outerRef) {
+          if (typeof outerRef === "function") outerRef(node);
+          else outerRef.current = node;
+        }
+      }}
+      {...props}
+    >
       <mesh
         geometry={nodes.polySurface944_tree_body_0.geometry}
         material={materials.PaletteMaterial001}
@@ -294,21 +314,9 @@ export function Island({
         material={materials.PaletteMaterial001}
       />
 
-      {/* Floating crystal that appears over the active island section */}
-      {currentStage && (
-        <Crystal
-          // Approximate anchor points above small islands for each stage
-          position={
-            currentStage === 1
-              ? [2.2, 2.5, 0.6]
-              : currentStage === 2
-              ? [-1.8, 2.3, -0.4]
-              : currentStage === 3
-              ? [0.4, 2.4, -1.8]
-              : [1.6, 2.2, -0.8]
-          }
-          scale={[0.3, 0.3, 0.3]}
-        />
+      {/* Crystal anchored to island (follows island). Visibility controlled by Home via showCrystal. */}
+      {crystalPos && props.showCrystal && (
+        <Crystal ref={crystalRef} position={crystalPos} scale={[0.75, 0.75, 0.75]} />
       )}
     </a.group>
   );

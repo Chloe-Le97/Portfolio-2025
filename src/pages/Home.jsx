@@ -8,12 +8,11 @@ import { HomeInfo, Loader } from "../components";
 import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
-import { Bird, Island, Sky, Witch } from "../models";
+import { Bird, Cat, Island, Sky, Witch } from "../models";
 
 // Watcher to auto-hide crystal if it stays off-screen for 1s
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
-  const timeoutRef = useRef(null);
 
   useFrame(() => {
     if (!position) return;
@@ -21,23 +20,9 @@ function CrystalVisibilityWatcher({ position, onHide }) {
     const ndc = world.clone().project(camera);
     const inView = ndc.x >= -1 && ndc.x <= 1 && ndc.y >= -1 && ndc.y <= 1 && ndc.z >= 0 && ndc.z <= 1;
     if (!inView) {
-      if (!timeoutRef.current) {
-        timeoutRef.current = setTimeout(() => {
-          onHide();
-          timeoutRef.current = null;
-        }, 1000);
-      }
-    } else if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+      onHide();
     }
   });
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
 
   return null;
 }
@@ -87,13 +72,11 @@ const Home = () => {
     }
   }, [currentStage]);
 
-  // When stage changes, show crystal immediately; delay right-side panels by 1s
+  // When stage changes, show crystal and panels immediately (no delay)
   useEffect(() => {
     if (currentStage && currentStage >= 2 && currentStage <= 4) {
       setCrystalVisible(true);
-      setPanelReady(false);
-      const t = setTimeout(() => setPanelReady(true), 500);
-      return () => clearTimeout(t);
+      setPanelReady(true);
     } else {
       setCrystalVisible(false);
       setPanelReady(false);
@@ -103,17 +86,8 @@ const Home = () => {
   // Unified wheel handling: scroll panel first, then rotate model at edges
   useEffect(() => {
     const handleUnifiedWheel = (e) => {
-      // hide hint on any wheel interaction
-      if (showScrollHint) setShowScrollHint(false);
 
-      // During crystal pre-panel phase, block rotation completely
-      if (crystalVisible && !panelReady) {
-        setIsWheelBlocked(true);
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-        return;
-      }
+     
       const panel = panelRef.current;
       if (!panel) {
         setIsWheelBlocked(false);
@@ -163,13 +137,10 @@ const Home = () => {
     };
 
     window.addEventListener("wheel", handleUnifiedWheel, { passive: false, capture: true });
-    const hideOnTouch = () => setShowScrollHint(false);
-    window.addEventListener("touchstart", hideOnTouch, { passive: true });
     return () => {
       window.removeEventListener("wheel", handleUnifiedWheel);
-      window.removeEventListener("touchstart", hideOnTouch);
     };
-  }, [currentStage, showScrollHint]);
+  }, [currentStage]);
 
   const adjustBiplaneForScreenSize = () => {
     let screenScale, screenPosition;
@@ -272,7 +243,10 @@ const Home = () => {
           />
 
           {/* Excluded from lift */}
-          <Bird />
+          <Bird origin={[0, 6, -10]} scale={[3.0, 3.0, 3.0]} path="diagonal" speed={1.2} yAmplitude={0.25} />
+          <Bird origin={[-6, 7, -18]} scale={[2.4, 2.4, 2.4]} path="circle" radius={8} speed={0.6} timeOffset={1.5} yAmplitude={0.3} yawOffset={0} />
+          <Bird origin={[8, 5.5, -14]} scale={[2.6, 2.6, 2.6]} path="circle" radius={5} speed={1.2} timeOffset={0.5} yAmplitude={0.2} yawOffset={0} />
+          <Bird origin={[-10, 6.5, -12]} scale={[2.2, 2.2, 2.2]} path="diagonal" speed={0.8} yAmplitude={0.22} timeOffset={2.2} />
           <Sky isRotating={isRotating} />
           {/* Lift Island and Witch upward by ~20px equivalent */}
           <Island
@@ -288,6 +262,12 @@ const Home = () => {
             isWheelBlocked={isWheelBlocked || (crystalVisible && !panelReady)}
             requestedStage={requestedStage}
             onStageAligned={() => setRequestedStage(null)}
+          />
+          {/* Cat near the island */}
+          <Cat
+            position={[2.5, -5.6 + yScreenLift, -38]}
+            rotation={[0, 0, 0]}
+            scale={[1.2, 1.2, 1.2]}
           />
           {/* Crystal now rendered inside Island per stage */}
           <Witch
@@ -321,10 +301,13 @@ const Home = () => {
       </div>
 
       {/* Bottom-centered scroll hint button (excluded from lift) */}
-      {showScrollHint && currentStage === 1 && (
+      {true && (
         <div className='absolute bottom-6 left-0 right-0 z-30 flex flex-col items-center justify-center'>
           <button
-            onClick={() => { setShowScrollHint(false); setRequestedStage(2); }}
+            onClick={() => {
+              const next = currentStage && currentStage >= 1 && currentStage <= 4 ? (currentStage === 4 ? 1 : currentStage + 1) : 2;
+              setRequestedStage(next);
+            }}
             className='pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-colors'
             aria-label='Scroll to explore'
           >

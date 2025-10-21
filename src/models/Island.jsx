@@ -47,7 +47,7 @@ export function Island({
   // Timeout to detect end of wheel interaction
   const wheelEndTimeout = useRef(null);
   // Maximum radians per frame for rotation speed (safety cap)
-  const MAX_ROT_SPEED = 0.025;
+  const MAX_ROT_SPEED = 0.0166666667; // slowed by 1.5x
 
   const clampSpeed = (v) => Math.max(-MAX_ROT_SPEED, Math.min(MAX_ROT_SPEED, v));
 
@@ -89,8 +89,8 @@ export function Island({
       // Update the reference for the last clientX position
       lastX.current = clientX;
 
-      // Update the rotation speed (applied in useFrame for smoothness)
-      rotationSpeed.current = clampSpeed(delta * 0.004 * Math.PI);
+      // Update the rotation speed (applied in useFrame for smoothness) - slowed by 1.5x
+      rotationSpeed.current = clampSpeed(delta * 0.0026666667 * Math.PI);
     }
   };
 
@@ -98,10 +98,10 @@ export function Island({
   const handleKeyDown = (event) => {
     if (event.key === "ArrowLeft") {
       if (!isRotating) setIsRotating(true);
-      rotationSpeed.current = clampSpeed(rotationSpeed.current + 0.0025);
+      rotationSpeed.current = clampSpeed(rotationSpeed.current + 0.0016666667);
     } else if (event.key === "ArrowRight") {
       if (!isRotating) setIsRotating(true);
-      rotationSpeed.current = clampSpeed(rotationSpeed.current - 0.0025);
+      rotationSpeed.current = clampSpeed(rotationSpeed.current - 0.0016666667);
     }
   };
 
@@ -140,7 +140,7 @@ export function Island({
       const delta = (clientX - lastX.current) / viewport.width;
   
       lastX.current = clientX;
-      rotationSpeed.current = clampSpeed(delta * 0.004 * Math.PI);
+      rotationSpeed.current = clampSpeed(delta * 0.0026666667 * Math.PI);
     }
   }
 
@@ -164,7 +164,7 @@ export function Island({
     const MAX_WHEEL = 80; // pixels per event
     const clampedPixels = Math.max(-MAX_WHEEL, Math.min(MAX_WHEEL, delta));
 
-    const rotationDelta = clampedPixels * 0.0006; // slower wheel sensitivity
+    const rotationDelta = clampedPixels * 0.0004; // slowed by 1.5x
     rotationSpeed.current = clampSpeed(rotationSpeed.current + rotationDelta);
 
     // After wheel inactivity, stop rotating to allow inertia/damping and stop plane animation
@@ -222,9 +222,10 @@ export function Island({
       if (typeof targetY === "number") {
         const current = islandRef.current.rotation.y;
         let diff = ((targetY - current + Math.PI) % (2 * Math.PI)) - Math.PI;
-        const step = Math.sign(diff) * Math.min(Math.abs(diff), 0.03);
+        // Slow alignment by 1.5x: reduce max step from 0.03 -> 0.02 and snap threshold accordingly
+        const step = Math.sign(diff) * Math.min(Math.abs(diff), 0.02);
         islandRef.current.rotation.y += step;
-        if (Math.abs(diff) < 0.02) {
+        if (Math.abs(diff) < 0.0133333333) {
           islandRef.current.rotation.y = targetY;
           if (onStageAligned) onStageAligned();
         }

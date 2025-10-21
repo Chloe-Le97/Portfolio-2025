@@ -4,7 +4,7 @@ import { Suspense, useRef, useState } from "react";
 
 import { Alert, Loader } from "../components";
 import useAlert from "../hooks/useAlert";
-import { Fox } from "../models";
+import { Cat } from "../models";
 
 const Contact = () => {
   const formRef = useRef();
@@ -157,7 +157,7 @@ const Contact = () => {
           />
 
           <Suspense fallback={<Loader />}>
-            <Fox
+            <Cat
               currentAnimation={currentAnimation}
               position={[0.5, 0.35, 0]}
               rotation={[12.629, -0.6, 0]}

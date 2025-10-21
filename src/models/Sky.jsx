@@ -14,7 +14,7 @@ export function Sky({ isRotating }) {
   // 'delta' represents the time in seconds since the last frame.
   useFrame((_, delta) => {
     if (isRotating) {
-      skyRef.current.rotation.y += 0.25 * delta; // Adjust the rotation speed as needed
+      skyRef.current.rotation.y += (0.25 / 1.5) * delta; // slowed by 1.5x
     }
   });
 

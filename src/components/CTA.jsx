@@ -7,8 +7,8 @@ const CTA = () => {
   return (
     <section className='cta'>
       <p className='cta-text'>
-        Have a project in mind? <br className='sm:block hidden' />
-        Let’s build something together!
+        Want to know more about me? <br className='sm:block hidden' />
+        Let’s connect!
       </p>
 	  <div className='flex gap-3 justify-center items-center'>
           {socialLinks.map((link) => (

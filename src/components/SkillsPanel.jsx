@@ -4,7 +4,7 @@ const SkillsPanel = () => {
   return (
     <section className='max-container'>
       <h3 className='subhead-text'>My Skills</h3>
-      <div className='mt-6 flex flex-wrap gap-6'>
+      <div className='mt-6 flex flex-wrap gap-4 md:gap-6'>
         {skills.map((skill) => (
           <div className='block-container w-20 h-20' key={skill.name}>
             <div className='btn-back rounded-xl' />

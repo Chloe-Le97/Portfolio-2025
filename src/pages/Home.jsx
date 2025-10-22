@@ -2,14 +2,14 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { arrow, soundoff, soundon } from "../assets/icons";
 import sakura from "../assets/sakura.mp3";
 import { HomeInfo, Loader } from "../components";
 import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
-import { Bird, Cat, Island, Sky, Witch } from "../models";
-
+import { Bird, Island, Sky, Witch } from "../models";
 // Watcher to auto-hide crystal if it stays off-screen for 1s
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
@@ -210,7 +210,7 @@ const Home = () => {
       <div
         ref={currentStage === 4 && panelReady ? panelRef : null}
         className={`absolute right-0 top-0 h-full z-20 bg-white/80 backdrop-blur-sm overflow-y-auto p-2 md:p-4 transition-transform duration-500 ease-out -translate-y-5 ${
-          currentStage === 4 && panelReady ? "translate-x-0 w-full md:w-[40%]" : "translate-x-full w-0"
+          currentStage === 4 && panelReady ? "translate-x-0 w-full md:w-[35%]" : "translate-x-full w-0"
         }`}
       >
         <ProjectsPanel />
@@ -220,13 +220,14 @@ const Home = () => {
         className={`w-full h-screen bg-transparent ${
           isRotating ? "cursor-grabbing" : "cursor-grab"
         }`}
-        camera={{ near: 0.1, far: 1000 }}
+        camera={{ near: 0.1, far: 1000 }}           dpr={[1, 1.5]}
+		gl={{ powerPreference: "high-performance", antialias: true, alpha: true }}
       >
         <Suspense fallback={<Loader />}>
-          {/* Softer exponential fog */}
-          <fogExp2 attach="fog" args={["#dbe9ff", 0.0008]} />
+          {/* Softer, less saturated sky fog */}
+          {/* <fogExp2 attach="fog" args={["#eef5ff", 0.0008]} /> */}
           <directionalLight position={[1, 1, 1]} intensity={2} />
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.45} />
           <pointLight position={[10, 5, 10]} intensity={2} />
           <spotLight
             position={[0, 50, 10]}
@@ -234,13 +235,14 @@ const Home = () => {
             penumbra={1}
             intensity={2}
           />
-          {/* Gentle warm sun ray */}
-          <directionalLight position={[5, 20, 15]} intensity={0.8} color={'#ffd9a8'} />
-          <hemisphereLight
-            skyColor='#b1e1ff'
+		    <hemisphereLight
+            skyColor='#eaf2ff'
             groundColor='#000000'
-            intensity={1}
+            intensity={0.7}
           />
+
+
+          {/* Original scene lighting restored; witch follow-light removed */}
 
           {/* Excluded from lift */}
           <Bird origin={[0, 6, -10]} scale={[3.0, 3.0, 3.0]} path="diagonal" speed={1.2} yAmplitude={0.25} />
@@ -264,17 +266,13 @@ const Home = () => {
             onStageAligned={() => setRequestedStage(null)}
           />
           {/* Cat near the island */}
-          <Cat
-            position={[2.5, -5.6 + yScreenLift, -38]}
-            rotation={[0, 0, 0]}
-            scale={[1.2, 1.2, 1.2]}
-          />
+
           {/* Crystal now rendered inside Island per stage */}
           <Witch
             isRotating={isRotating}
             currentStage={currentStage}
             outerRef={witchRef}
-            position={[biplanePositionAdj[0], biplanePositionAdj[1] + yScreenLift, biplanePositionAdj[2]]}
+            position={[biplanePositionAdj[0] - 1.6, biplanePositionAdj[1] + yScreenLift + 1.6, biplanePositionAdj[2] + 1.0]}
             rotation={[0, 20.1, 0]}
             scale={biplaneScaleAdj}
           />
@@ -288,6 +286,15 @@ const Home = () => {
               onHide={() => setCrystalVisible(false)}
             />
           )}
+          {/* Subtle bloom with high threshold to catch only bright highlights */}
+          <EffectComposer>
+            <Bloom
+              intensity={0.25}
+              luminanceThreshold={1.5}
+			  luminanceSmoothing={0.2}
+              mipmapBlur
+            />
+          </EffectComposer>
         </Suspense>
       </Canvas>
 
@@ -305,10 +312,12 @@ const Home = () => {
         <div className='absolute bottom-6 left-0 right-0 z-30 flex flex-col items-center justify-center'>
           <button
             onClick={() => {
+              // Prevent double-click spamming while a stage transition is in progress
+              if (requestedStage) return;
               const next = currentStage && currentStage >= 1 && currentStage <= 4 ? (currentStage === 4 ? 1 : currentStage + 1) : 2;
               setRequestedStage(next);
             }}
-            className='pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-colors'
+            className='pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white transition-colors glow-button'
             aria-label='Scroll to explore'
           >
             <img src={arrow} alt='' className='w-6 h-6 animate-bounce rotate-90' />

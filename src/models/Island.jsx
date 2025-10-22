@@ -13,6 +13,7 @@ import { a } from "@react-spring/three";
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 import islandScene from "../assets/3d/island.glb";
 import { Crystal } from "./Crystal";
@@ -273,6 +274,9 @@ export function Island({
     4: [16.6, 11.6, 21.5],
   };
   const crystalPos = stageAnchors[currentStage] || null;
+  const glowPos = crystalPos
+    ? [crystalPos[0], crystalPos[1] - 1.0, crystalPos[2]]
+    : null;
 
   return (
     // {Island 3D model from: https://sketchfab.com/3d-models/foxs-islands-163b68e09fcc47618450150be7785907}
@@ -315,9 +319,22 @@ export function Island({
         material={materials.PaletteMaterial001}
       />
 
-      {/* Crystal anchored to island (follows island). Visibility controlled by Home via showCrystal. */}
+      {/* Crystal and subtle ground glow under the active stage */}
       {crystalPos && props.showCrystal && (
-        <Crystal ref={crystalRef} position={crystalPos} scale={[0.75, 0.75, 0.75]} />
+        <>
+          <Crystal ref={crystalRef} position={crystalPos} scale={[0.75, 0.75, 0.75]} />
+          {glowPos && (
+            <>
+              {/* Soft ground ring */}
+              <mesh position={glowPos} rotation={[-Math.PI / 2, 0, 0]} renderOrder={1}>
+                <ringGeometry args={[0.7, 1.2, 48]} />
+                <meshBasicMaterial color={'#ffd7b3'} transparent opacity={0.5} side={THREE.DoubleSide} />
+              </mesh>
+              {/* Local fill light to make the active area stand out */}
+              <pointLight position={[crystalPos[0], crystalPos[1] + 0.6, crystalPos[2]]} color={'#ffd7b3'} intensity={500.7} distance={20} decay={2} />
+            </>
+          )}
+        </>
       )}
     </a.group>
   );

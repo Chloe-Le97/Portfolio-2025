@@ -4,6 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Subtle glowing pulse utility for CTA buttons */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 14px 4px rgba(116, 199, 255, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 22px 10px rgba(116, 199, 255, 0.7);
+  }
+}
+
+.glow-button {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
 :root {
   --blue-rgb: 237 245 255;
   --green-rgb: 125 161 35;

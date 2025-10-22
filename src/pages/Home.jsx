@@ -9,7 +9,7 @@ import { HomeInfo, Loader } from "../components";
 import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
-import { Bird, Island, Sky, Witch } from "../models";
+import { Island, Sky, Witch } from "../models";
 // Watcher to auto-hide crystal if it stays off-screen for 1s
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
@@ -186,7 +186,7 @@ const Home = () => {
   const yScreenLift = 0.5; // tuned world-units approximation for ~20px at current camera
 
   return (
-    <section className='w-full h-screen relative overflow-hidden'>
+    <section className='w-full h-screen relative overflow-hidden fade-in-quick'>
       {currentStage === 1 && (
         <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center -translate-y-[5px]'>
           <HomeInfo currentStage={currentStage} />
@@ -245,11 +245,7 @@ const Home = () => {
           {/* Original scene lighting restored; witch follow-light removed */}
 
           {/* Excluded from lift */}
-          <Bird origin={[0, 6, -10]} scale={[3.0, 3.0, 3.0]} path="diagonal" speed={1.2} yAmplitude={0.25} />
-          <Bird origin={[-6, 7, -18]} scale={[2.4, 2.4, 2.4]} path="circle" radius={8} speed={0.6} timeOffset={1.5} yAmplitude={0.3} yawOffset={0} />
-          <Bird origin={[8, 5.5, -14]} scale={[2.6, 2.6, 2.6]} path="circle" radius={5} speed={1.2} timeOffset={0.5} yAmplitude={0.2} yawOffset={0} />
-          <Bird origin={[-10, 6.5, -12]} scale={[2.2, 2.2, 2.2]} path="diagonal" speed={0.8} yAmplitude={0.22} timeOffset={2.2} />
-          <Sky isRotating={isRotating} />
+         <Sky isRotating={isRotating} />
           {/* Lift Island and Witch upward by ~20px equivalent */}
           <Island
             isRotating={isRotating}

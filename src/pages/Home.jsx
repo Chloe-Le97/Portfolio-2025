@@ -9,7 +9,7 @@ import { HomeInfo, Loader } from "../components";
 import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
-import { Island, Sky, Witch } from "../models";
+import { Bird, Island, Sky, Witch } from "../models";
 // Watcher to auto-hide crystal if it stays off-screen for 1s
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
@@ -186,7 +186,7 @@ const Home = () => {
   const yScreenLift = 0.5; // tuned world-units approximation for ~20px at current camera
 
   return (
-    <section className='w-full h-screen relative overflow-hidden fade-in-quick'>
+    <section className='w-full h-screen relative overflow-hidden'>
       {currentStage === 1 && (
         <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center -translate-y-[5px]'>
           <HomeInfo currentStage={currentStage} />
@@ -243,9 +243,47 @@ const Home = () => {
 
 
           {/* Original scene lighting restored; witch follow-light removed */}
-
+			
           {/* Excluded from lift */}
          <Sky isRotating={isRotating} />
+		
+		 <Bird origin={[0, 5, -8]} scale={[1.8, 1.8, 1.8]} path="diagonal" speed={1} radius={6} yAmplitude={0.2} ySpeed={1.0} timeOffset={0} yawOffset={0} />
+
+			// add 3 birds here with different positions and scales different speeds and different paths
+			<Bird 
+				origin={[-7, 7, -13]}
+				scale={[1.3, 1.3, 1.3]}
+				path="circle"
+				speed={0.55}
+				radius={5}
+				yAmplitude={0.35}
+				ySpeed={1.4}
+				timeOffset={1.7}
+				yawOffset={0.2}
+			/>
+			<Bird 
+				origin={[8, 6.5, -14]}
+				scale={[1.8, 1.8, 1.8]}
+				path="diagonal"
+				speed={0.7}
+				radius={8}
+				yAmplitude={0.12}
+				ySpeed={0.9}
+				timeOffset={-2.2}
+				yawOffset={-0.15}
+			/>
+			<Bird 
+				origin={[0, 11, -17]}
+				scale={[2.1, 2.1, 2.1]}
+				path="circle"
+				speed={0.33}
+				radius={7}
+				yAmplitude={0.27}
+				ySpeed={1.13}
+				timeOffset={0.6}
+				yawOffset={0}
+			/>
+
           {/* Lift Island and Witch upward by ~20px equivalent */}
           <Island
             isRotating={isRotating}

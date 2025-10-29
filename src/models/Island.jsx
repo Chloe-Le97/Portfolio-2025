@@ -331,7 +331,7 @@ export function Island({
                 <meshBasicMaterial color={'#ffd7b3'} transparent opacity={0.5} side={THREE.DoubleSide} />
               </mesh>
               {/* Local fill light to make the active area stand out */}
-              <pointLight position={[crystalPos[0], crystalPos[1] + 0.6, crystalPos[2]]} color={'#ffd7b3'} intensity={500.7} distance={20} decay={2} />
+              <pointLight position={[crystalPos[0], crystalPos[1] + 0.6, crystalPos[2]]} color={'#ffd7b3'} intensity={700.7} distance={20} decay={2} />
             </>
           )}
         </>

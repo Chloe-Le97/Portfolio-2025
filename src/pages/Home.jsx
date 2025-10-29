@@ -4,6 +4,7 @@ import * as THREE from "three";
 
 // import { EffectComposer } from '@react-three/postprocessing';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import gsap from "gsap";
 import { arrow, soundoff, soundon } from "../assets/icons";
 import sakura from "../assets/sakura.mp3";
 import { HomeInfo, Loader } from "../components";
@@ -11,7 +12,65 @@ import ProjectsPanel from "../components/ProjectsPanel";
 import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
 import { Bird, Island, Sky, Witch } from "../models";
-// Watcher to auto-hide crystal if it stays off-screen for 1s
+
+function IntroCameraControl({ onComplete }) {
+	const { camera } = useThree();
+	
+	// 1. ĐIỂM BẮT ĐẦU: Rất Cao, Xa và Nghiêng
+	const initialPosition = [0, 120, 80]; // <--- X = 0
+	// Góc quay: Giữ góc nhìn xuống 40 độ, loại bỏ góc quay ngang (Y=0)
+	const initialRotation = new THREE.Euler(-Math.PI * (40 / 180), 0, 0); // <--- Y = 0
+
+	// 2. ĐIỂM GIỮA (Đỉnh Vòng Cung): Cao hơn, gần hơn một chút, góc nhìn đã gần ngang
+	const midPosition = [0, 10, 80]; // <--- THAY ĐỔI VỊ TRÍ Y VÀ Z
+	const midRotation = new THREE.Euler(0, 0, 0); // <--- THAY ĐỔI GÓC X = 0
+
+	// 3. ĐIỂM KẾT THÚC: Vị trí cuối cùng, nhìn ngang, zoom ra xa đủ
+	const targetPosition = [0, 0, 6]; 
+	const targetRotation = [0, 0, 0];
+  
+	useEffect(() => {
+		// THIẾT LẬP VỊ TRÍ BAN ĐẦU
+		camera.position.set(initialPosition[0], initialPosition[1], initialPosition[2]);
+		camera.rotation.set(initialRotation.x, initialRotation.y, initialRotation.z);
+		camera.updateProjectionMatrix();
+	
+		const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+	
+		tl.to(camera.position, {
+			x: midPosition[0],
+			y: midPosition[1],
+			z: midPosition[2],
+			duration: 2.0,
+		}, 0)
+		.to(camera.rotation, {
+			x: midRotation.x,
+			y: midRotation.y,
+			z: midRotation.z,
+			duration: 2.0,
+		}, 0);
+	
+		const overlapTime = 1.6; // <--- overlap time between the two animations
+
+		tl.to(camera.position, {
+			x: targetPosition[0],
+			y: targetPosition[1],
+			z: targetPosition[2],
+			duration: 1.5,
+		}, overlapTime)
+		.to(camera.rotation, {
+			x: targetRotation[0],
+			y: targetRotation[1],
+			z: targetRotation[2],
+			duration: 1.5,
+			onComplete: onComplete
+		}, overlapTime);
+	
+	  }, [camera, onComplete]);
+	
+	  return null;
+	}
+
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
 
@@ -47,6 +106,7 @@ const Home = () => {
   const [panelReady, setPanelReady] = useState(false);
   const crystalRef = useRef(null);
   const [showScrollHint, setShowScrollHint] = useState(true);
+  const [isIntroComplete, setIsIntroComplete] = useState(false);
 
   useEffect(() => {
     if (isPlayingMusic) {
@@ -158,6 +218,8 @@ const Home = () => {
     return [screenScale, screenPosition];
   };
 
+  const canInteract = isIntroComplete;
+
   const adjustIslandForScreenSize = () => {
     let screenScale, screenPosition;
 
@@ -188,20 +250,20 @@ const Home = () => {
 
   return (
     <section className='w-full h-screen relative overflow-hidden'>
-      {currentStage === 1 && (
+      {currentStage === 1 && canInteract && (
         <div className='absolute top-28 left-0 right-0 z-10 flex items-center justify-center -translate-y-[5px]'>
           <HomeInfo currentStage={currentStage} />
         </div>
       )}
 
       {/* Right side panels */}
-      {currentStage === 2 && panelReady && (
+      {currentStage === 2 && panelReady && canInteract && (
         <div ref={panelRef} className='absolute right-0 top-0 h-full w-full md:w-[40%] z-20 bg-transparent overflow-y-auto p-4 md:p-6 -translate-y-5'>
           <SkillsPanel />
         </div>
       )}
 
-      {currentStage === 3 && panelReady && (
+      {currentStage === 3 && panelReady && canInteract && (
         <div ref={panelRef} className='absolute right-0 top-[-20px] md:top-[-40px] h-full w-full md:w-[55%] lg:w-[50%] z-20 bg-transparent overflow-y-auto p-4 md:p-6 -translate-y-5'>
           <WorkExperience />
         </div>
@@ -209,7 +271,7 @@ const Home = () => {
 
       {/* Slide-in Projects panel on the right for stage 4 */}
       <div
-        ref={currentStage === 4 && panelReady ? panelRef : null}
+        ref={currentStage === 4 && panelReady && canInteract ? panelRef : null}
         className={`absolute right-0 top-0 h-full z-20 bg-white/80 backdrop-blur-sm overflow-y-auto p-2 md:p-4 transition-transform duration-500 ease-out -translate-y-5 ${
           currentStage === 4 && panelReady ? "translate-x-0 w-full md:w-[35%]" : "translate-x-full w-0"
         }`}
@@ -219,7 +281,7 @@ const Home = () => {
 
       <Canvas
         className={`w-full h-screen bg-transparent ${
-          isRotating ? "cursor-grabbing" : "cursor-grab"
+          isRotating && canInteract ? "cursor-grabbing" : "cursor-grab"
         }`}
         camera={{ near: 0.1, far: 1000 }}           dpr={[1, 1.5]}
 		gl={{ powerPreference: "high-performance", antialias: true, alpha: true }}
@@ -242,11 +304,13 @@ const Home = () => {
             intensity={0.7}
           />
 
+			{!isIntroComplete && (
+            <IntroCameraControl onComplete={() => setIsIntroComplete(true)} />
+          )}
 
-          {/* Original scene lighting restored; witch follow-light removed */}
-			
-          {/* Excluded from lift */}
-         <Sky isRotating={isRotating} />
+
+
+         <Sky isRotating={isRotating && canInteract} />
 		
 		 <Bird origin={[0, 5, -8]} scale={[1.8, 1.8, 1.8]} path="diagonal" speed={1} radius={6} yAmplitude={0.2} ySpeed={1.0} timeOffset={0} yawOffset={0} />
 

@@ -68,7 +68,7 @@ export default function IntroScene({ onComplete, presetTexture }) {
   return (
     <div className="w-full h-screen">
       <Canvas camera={{ fov: 45, near: 0.1, far: 100 }} gl={{ alpha: true }} style={{ background: "transparent" }}>
-	  <Environment preset="warehouse" background={false} blur={0.5} /> 
+	  <Environment preset="night" background={false} blur={0.5} /> 
         
         <ambientLight intensity={1} color={'#ffffff'}/> 
         <pointLight position={[5, 5, 5]} intensity={50} color={'#ffffff'} />

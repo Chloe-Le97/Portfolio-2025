@@ -9,7 +9,6 @@ export default function SceneManager() {
   const [showHome, setShowHome] = useState(false);
   const [preloaded, setPreloaded] = useState(false);
   const [introTexture, setIntroTexture] = useState(null);
-  const [bgOpacity, setBgOpacity] = useState(0.1);
   // Preload critical assets (texture + GLBs) with native loaders so we know exactly when ready
 
   useEffect(() => {
@@ -40,48 +39,18 @@ export default function SceneManager() {
       setIntroTexture(tex);
       setPreloaded(true);
 	  	
-	  // Increase bg opacity during loading to avoid white flash
-
-
     }).catch(() => {
       if (!mounted) return;
       setPreloaded(true);
     });
     return () => { mounted = false; };
 	
-	
   }, []);
 
   const handleIntroComplete = () => {
     setShowHome(true);
 
-	console.log('intro complete');
-
   };
-
- 
-
-//   useEffect(() => {
-//     let intervalId;
-
-//     if (bgOpacity === 0) {
-//       intervalId = setInterval(() => {
-//         setBgOpacity(prev => {
-//           const next = Math.min(1, prev + 0.1);
-//           if (next >= 1 && intervalId) {
-//             clearInterval(intervalId);
-//           }
-//           return next;
-//         });
-//       }, 80);
-//     }
-
-//     return () => {
-//       if (intervalId) clearInterval(intervalId);
-//     };
-//   }, []); // run only once on mount
-  
-  console.log(bgOpacity);
   
   return (
     <>
@@ -101,7 +70,7 @@ export default function SceneManager() {
           </div>
         </div>
       )}
-      {preloaded && !showHome && <IntroScene onComplete={handleIntroComplete} presetTexture={introTexture} bgOpacity={bgOpacity} />}
+      {preloaded && !showHome && <IntroScene onComplete={handleIntroComplete} presetTexture={introTexture} />}
       {preloaded && showHome && (
         <div className='fade-in-quick'>
           <Home />

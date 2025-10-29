@@ -83,12 +83,17 @@ export function Witch({ isRotating, currentStage, outerRef, ...props }) {
         } else {
           try {
             const baseColor = mat && mat.color ? mat.color.clone() : new THREE.Color('#a8d8ff');
-            chosen.material = new THREE.MeshStandardMaterial({
-              color: baseColor,
-              roughness: 0.25,
-              metalness: 0.0,
-              emissive: new THREE.Color('#74c7ff'),
-              emissiveIntensity: 1.6,
+            chosen.material = new THREE.MeshPhysicalMaterial({
+				color: baseColor,
+				roughness: 0.05,       
+				metalness: 0.15,        
+				emissive: new THREE.Color('#B8F3FF'), 
+				emissiveIntensity: 0.8,     
+				transmission: 0.8,
+				ior: 1.3,
+				thickness: 0.1,
+				clearcoat: 1, 
+				clearcoatRoughness: 0
             });
           } catch {}
         }

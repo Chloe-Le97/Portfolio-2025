@@ -6,7 +6,7 @@ import { projects } from "../constants";
 
 const ProjectsPanel = () => {
   return (
-    <section className='max-container'>
+    <section className='max-container p-4 md:p-6'>
       <h1 className='head-text'>
         My <span className='blue-gradient_text drop-shadow font-semibold'>Projects</span>
       </h1>

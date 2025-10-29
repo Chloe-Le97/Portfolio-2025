@@ -2,6 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
+// import { EffectComposer } from '@react-three/postprocessing';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { arrow, soundoff, soundon } from "../assets/icons";
 import sakura from "../assets/sakura.mp3";
@@ -227,7 +228,7 @@ const Home = () => {
           {/* Softer, less saturated sky fog */}
           {/* <fogExp2 attach="fog" args={["#eef5ff", 0.0008]} /> */}
           <directionalLight position={[1, 1, 1]} intensity={2} />
-          <ambientLight intensity={0.45} />
+          <ambientLight intensity={1.35} />
           <pointLight position={[10, 5, 10]} intensity={2} />
           <spotLight
             position={[0, 50, 10]}

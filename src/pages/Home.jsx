@@ -13,63 +13,101 @@ import SkillsPanel from "../components/SkillsPanel";
 import WorkExperience from "../components/WorkExperience";
 import { Bird, Island, Sky, Witch } from "../models";
 
-function IntroCameraControl({ onComplete }) {
-	const { camera } = useThree();
+// function IntroCameraControl({ onComplete }) {
+// 	const { camera } = useThree();
 	
-	// 1. ĐIỂM BẮT ĐẦU: Rất Cao, Xa và Nghiêng
-	const initialPosition = [0, 120, 80]; // <--- X = 0
-	// Góc quay: Giữ góc nhìn xuống 40 độ, loại bỏ góc quay ngang (Y=0)
-	const initialRotation = new THREE.Euler(-Math.PI * (40 / 180), 0, 0); // <--- Y = 0
+// 	const initialPosition = [0, 200, 90]; // <--- X = 0
+// 	const initialRotation = new THREE.Euler(-Math.PI * (40 / 180), 0, 0); // <--- Y = 0
 
-	// 2. ĐIỂM GIỮA (Đỉnh Vòng Cung): Cao hơn, gần hơn một chút, góc nhìn đã gần ngang
-	const midPosition = [0, 10, 80]; // <--- THAY ĐỔI VỊ TRÍ Y VÀ Z
-	const midRotation = new THREE.Euler(0, 0, 0); // <--- THAY ĐỔI GÓC X = 0
+// 	const midPosition = [0, 40, 90]; 
+// 	const midRotation = new THREE.Euler(0, 0, 0); 
 
-	// 3. ĐIỂM KẾT THÚC: Vị trí cuối cùng, nhìn ngang, zoom ra xa đủ
-	const targetPosition = [0, 0, 6]; 
-	const targetRotation = [0, 0, 0];
+// 	const targetPosition = [0, 0, 6]; 
+// 	const targetRotation = [0, 0, 0];
   
-	useEffect(() => {
-		// THIẾT LẬP VỊ TRÍ BAN ĐẦU
-		camera.position.set(initialPosition[0], initialPosition[1], initialPosition[2]);
-		camera.rotation.set(initialRotation.x, initialRotation.y, initialRotation.z);
-		camera.updateProjectionMatrix();
+// 	useEffect(() => {
+		
+// 		camera.position.set(initialPosition[0], initialPosition[1], initialPosition[2]);
+// 		camera.rotation.set(initialRotation.x, initialRotation.y, initialRotation.z);
+// 		camera.updateProjectionMatrix();
 	
-		const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+// 		const tl = gsap.timeline({ defaults: { ease: "power1.inOut" } });
 	
-		tl.to(camera.position, {
-			x: midPosition[0],
-			y: midPosition[1],
-			z: midPosition[2],
-			duration: 2.0,
-		}, 0)
-		.to(camera.rotation, {
-			x: midRotation.x,
-			y: midRotation.y,
-			z: midRotation.z,
-			duration: 2.0,
-		}, 0);
+// 		tl.to(camera.position, {
+// 			x: midPosition[0],
+// 			y: midPosition[1],
+// 			z: midPosition[2],
+// 			duration: 2.0,
+// 		}, 0)
+// 		.to(camera.rotation, {
+// 			x: midRotation.x,
+// 			y: midRotation.y,
+// 			z: midRotation.z,
+// 			duration: 2.0,
+// 		}, 0);
 	
-		const overlapTime = 1.6; // <--- overlap time between the two animations
+// 		const overlapTime = 1.6; // <--- overlap time between the two animations
 
-		tl.to(camera.position, {
-			x: targetPosition[0],
-			y: targetPosition[1],
-			z: targetPosition[2],
-			duration: 1.5,
-		}, overlapTime)
-		.to(camera.rotation, {
-			x: targetRotation[0],
-			y: targetRotation[1],
-			z: targetRotation[2],
-			duration: 1.5,
-			onComplete: onComplete
-		}, overlapTime);
+// 		tl.to(camera.position, {
+// 			x: targetPosition[0],
+// 			y: targetPosition[1],
+// 			z: targetPosition[2],
+// 			duration: 1.5,
+// 		}, overlapTime)
+// 		.to(camera.rotation, {
+// 			x: targetRotation[0],
+// 			y: targetRotation[1],
+// 			z: targetRotation[2],
+// 			duration: 1.5,
+// 			onComplete: onComplete
+// 		}, overlapTime);
 	
-	  }, [camera, onComplete]);
+// 	  }, [camera, onComplete]);
 	
-	  return null;
-	}
+// 	  return null;
+// 	}
+
+function IntroCameraControl({ onComplete }) {
+    const { camera } = useThree();
+    
+    // 1. ĐIỂM BẮT ĐẦU: Phía SAU (Z dương), Rất Cao, Hơi Lệch
+    // X=30: Lệch sang phải
+   const initialPosition = [0, 40, 90]; // <--- Vị trí (Phía Sau, Cao, Chính diện X=0)
+    // Góc quay: Nhìn xuống 40 độ, quay NGƯỢC 180 độ (hướng ra sau)
+    const initialRotation = new THREE.Euler(0, 0, 0); // <--- Góc quay Y = 180 độ 
+    // 2. ĐIỂM KẾT THÚC: Phía TRƯỚC (Z=6), Ngang Tầm Mắt, Chính Diện
+    const targetPosition = [0, 0, 6]; 
+    const targetRotation = [0, 0, 0];
+  
+    useEffect(() => {
+        
+        camera.position.set(initialPosition[0], initialPosition[1], initialPosition[2]);
+        camera.rotation.set(initialRotation.x, initialRotation.y, initialRotation.z);
+        camera.updateProjectionMatrix();
+    
+        // TẠO CHUYỂN ĐỘNG VÒNG CUNG TỪ SAU RA TRƯỚC
+        // Sử dụng duration dài hơn để chuyển động vòng cung có cảm giác lướt
+        const DURATION = 2; 
+        const tl = gsap.timeline({ defaults: { ease: "sine.inOut" } }); // Dùng sine.inOut cho chuyển động mượt
+
+        tl.to(camera.position, {
+            x: targetPosition[0],
+            y: targetPosition[1],
+            z: targetPosition[2],
+            duration: DURATION,
+        }, 0)
+        .to(camera.rotation, {
+            x: targetRotation[0],
+            y: targetRotation[1],
+            z: targetRotation[2],
+            duration: DURATION,
+            onComplete: onComplete
+        }, 0);
+    
+      }, [camera, onComplete]);
+    
+      return null;
+    }
 
 function CrystalVisibilityWatcher({ position, onHide }) {
   const { camera } = useThree();
@@ -87,7 +125,8 @@ function CrystalVisibilityWatcher({ position, onHide }) {
   return null;
 }
 
-const Home = () => {
+const Home = ({showHome, setFinishedLoading}) => {
+
   const audioRef = useRef(new Audio(sakura));
   audioRef.current.volume = 0.4;
   audioRef.current.loop = true;
@@ -272,7 +311,7 @@ const Home = () => {
       {/* Slide-in Projects panel on the right for stage 4 */}
       <div
         ref={currentStage === 4 && panelReady && canInteract ? panelRef : null}
-        className={`absolute right-0 top-0 h-full z-20 bg-white/80 backdrop-blur-sm overflow-y-auto p-2 md:p-4 transition-transform duration-500 ease-out -translate-y-5 ${
+        className={`absolute right-0 top-0 h-full z-40 bg-white/80 backdrop-blur-sm overflow-y-auto p-2 md:p-4 transition-transform duration-500 ease-out -translate-y-5 ${
           currentStage === 4 && panelReady ? "translate-x-0 w-full md:w-[35%]" : "translate-x-full w-0"
         }`}
       >
@@ -285,12 +324,15 @@ const Home = () => {
         }`}
         camera={{ near: 0.1, far: 1000 }}           dpr={[1, 1.5]}
 		gl={{ powerPreference: "high-performance", antialias: true, alpha: true }}
+		onCreated={() => {
+			setFinishedLoading?.(true);
+		}}
       >
         <Suspense fallback={<Loader />}>
           {/* Softer, less saturated sky fog */}
           {/* <fogExp2 attach="fog" args={["#eef5ff", 0.0008]} /> */}
           <directionalLight position={[1, 1, 1]} intensity={2} />
-          <ambientLight intensity={1.35} />
+          <ambientLight intensity={1} />
           <pointLight position={[10, 5, 10]} intensity={2} />
           <spotLight
             position={[0, 50, 10]}
@@ -304,7 +346,7 @@ const Home = () => {
             intensity={0.7}
           />
 
-			{!isIntroComplete && (
+			{showHome && !isIntroComplete && (
             <IntroCameraControl onComplete={() => setIsIntroComplete(true)} />
           )}
 
@@ -314,7 +356,6 @@ const Home = () => {
 		
 		 <Bird origin={[0, 5, -8]} scale={[1.8, 1.8, 1.8]} path="diagonal" speed={1} radius={6} yAmplitude={0.2} ySpeed={1.0} timeOffset={0} yawOffset={0} />
 
-			// add 3 birds here with different positions and scales different speeds and different paths
 			<Bird 
 				origin={[-7, 7, -13]}
 				scale={[1.3, 1.3, 1.3]}
@@ -371,7 +412,7 @@ const Home = () => {
             isRotating={isRotating}
             currentStage={currentStage}
             outerRef={witchRef}
-            position={[biplanePositionAdj[0] - 1.6, biplanePositionAdj[1] + yScreenLift + 1.6, biplanePositionAdj[2] + 1.0]}
+            position={[biplanePositionAdj[0] - 1.8, biplanePositionAdj[1] + yScreenLift + 2, biplanePositionAdj[2] + 1.0]}
             rotation={[0, 20.1, 0]}
             scale={biplaneScaleAdj}
           />

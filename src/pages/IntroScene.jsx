@@ -21,15 +21,15 @@ function Sphere({ onComplete }) {
     // zoom effect
     gsap.to(camera.position, {
       z: -1.5,
-      duration: 3,
-      ease: "power2.inOut",
+      duration: 2,
+      ease: "power2.in",
       onComplete: onComplete,
     });
   }, [camera, onComplete]);
 
   useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += 0.002;
+      meshRef.current.rotation.y += 0.03;
     }
   });
 

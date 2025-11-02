@@ -9,6 +9,7 @@ export default function SceneManager() {
   const [showHome, setShowHome] = useState(false);
   const [preloaded, setPreloaded] = useState(false);
   const [introTexture, setIntroTexture] = useState(null);
+  const [finishedLoading, setFinishedLoading] = useState(false);
   // Preload critical assets (texture + GLBs) with native loaders so we know exactly when ready
 
   useEffect(() => {
@@ -27,55 +28,36 @@ export default function SceneManager() {
       gltfLoader.load(p, () => resolve(true), undefined, reject);
     });
 
-    Promise.all([
-      loadTex(),
-      glb('/src/assets/3d/island.glb'),
-      glb('/src/assets/3d/witch.glb'),
-      glb('/src/assets/3d/sky.glb'),
-      glb('/src/assets/3d/bird.glb'),
-      glb('/src/assets/3d/crystal.glb'),
-    ]).then(([tex]) => {
-      if (!mounted) return;
-      setIntroTexture(tex);
-      setPreloaded(true);
-	  	
-    }).catch(() => {
-      if (!mounted) return;
-      setPreloaded(true);
-    });
     return () => { mounted = false; };
 	
   }, []);
 
   const handleIntroComplete = () => {
-    setShowHome(true);
 
+setShowHome(true);
   };
   
   return (
     <>
       {/* Persistent background image (loads first and is shared by intro + home) */}
-      <img
+      {/* <img
         src={bluesky}
         alt="sky"
         className='fixed inset-0 -z-10 w-full h-full object-cover sky-image'
         decoding='async'
         fetchpriority='high'
-      />
-      {!preloaded && (
-        <div className='fixed inset-0 z-[1000] flex items-center justify-center bg-white/90 backdrop-blur-sm'>
-          <div className='flex flex-col items-center gap-3 px-4 py-3 rounded-xl bg-white/90 shadow-md border border-black/10'>
-            <div className='w-10 h-10 border-2 border-opacity-20 border-blue-500 border-t-blue-500 rounded-full animate-spin'></div>
-            <div className='text-sm font-medium text-slate-700'>Loading...</div>
-          </div>
+      /> */}
+      {!showHome && <IntroScene onComplete={handleIntroComplete} presetTexture={introTexture} />}
+
+        <div 
+		// className='fade-in-quick'
+		style={{
+			opacity: showHome ? 1 : 0,
+			transition: "opacity 0.5s ease-in-out",
+		}}
+		>
+          <Home showHome={showHome}/>
         </div>
-      )}
-      {preloaded && !showHome && <IntroScene onComplete={handleIntroComplete} presetTexture={introTexture} />}
-      {preloaded && showHome && (
-        <div className='fade-in-quick'>
-          <Home />
-        </div>
-      )}
     </>
   );
 }

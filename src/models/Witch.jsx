@@ -55,7 +55,7 @@ export function Witch({ isRotating, currentStage, outerRef, ...props }) {
     scene.position.y = 0.6;
     scene.scale.setScalar(0.35);
     // Fixed yaw: slightly more to the right (~99°)
-    const yaw = -Math.PI * 0.6;
+    const yaw = -Math.PI * 0.65;
     scene.rotation.set(scene.rotation.x, yaw, scene.rotation.z);
 
     // After initial transforms, pick the best orb candidate (lowest world Y)

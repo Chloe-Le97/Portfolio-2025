@@ -1,30 +1,22 @@
 import {
 	car,
-	contact,
 	css,
-	estate,
 	express,
 	git,
 	github,
 	html,
 	javascript,
 	linkedin,
-	mongodb,
-	motion,
-	mui,
-	nextjs,
 	nodejs,
 	pricewise,
 	react,
-	redux,
 	sass,
-	snapgram,
-	summiz,
 	tailwindcss,
 	threads,
-	typescript
+	typescript,
+	wordpress
 } from "../assets/icons";
-import { meta, shopify, starbucks, tesla } from "../assets/images";
+import { liana, virtual } from "../assets/images";
 
 export const skills = [
     {
@@ -57,26 +49,11 @@ export const skills = [
         name: "JavaScript",
         type: "Frontend",
     },
-    {
-        imageUrl: mongodb,
-        name: "MongoDB",
-        type: "Database",
-    },
-    {
-        imageUrl: motion,
-        name: "Motion",
-        type: "Animation",
-    },
-    {
-        imageUrl: mui,
-        name: "Material-UI",
-        type: "Frontend",
-    },
-    {
-        imageUrl: nextjs,
-        name: "Next.js",
-        type: "Frontend",
-    },
+	{
+		imageUrl: wordpress,
+		name: "WordPress",
+		type: "Frontend",
+	},
     {
         imageUrl: nodejs,
         name: "Node.js",
@@ -86,11 +63,6 @@ export const skills = [
         imageUrl: react,
         name: "React",
         type: "Frontend",
-    },
-    {
-        imageUrl: redux,
-        name: "Redux",
-        type: "State Management",
     },
     {
         imageUrl: sass,
@@ -111,65 +83,40 @@ export const skills = [
 
 export const experiences = [
     {
-        title: "React.js Developer",
-        company_name: "Starbucks",
-        icon: starbucks,
-        iconBg: "#accbe1",
-        date: "March 2020 - April 2021",
+        title: "Frontend Developer",
+        company_name: "Liana Technologies",
+        icon: liana,
+        iconBg: "#fffffff2",
+        date: "May 2021 - Now",
         points: [
-            "Developing and maintaining web applications using React.js and other related technologies.",
-            "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
+            "Developing and maintaining website using Wordpress, React.js, PHP, Javascript and other related technologies.",
+            "Leading frontend development for 5 projects.",
             "Implementing responsive design and ensuring cross-browser compatibility.",
-            "Participating in code reviews and providing constructive feedback to other developers.",
+            "Leading internal training and external training for 5 projects.",
         ],
     },
     {
-        title: "React Native Developer",
-        company_name: "Tesla",
-        icon: tesla,
-        iconBg: "#fbc3bc",
-        date: "Jan 2021 - Feb 2022",
+        title: "Frontend Developer Trainee",
+        company_name: "Virtual Connections",
+        icon: virtual,
+        iconBg: "#fffffff2",
+        date: "Jan 2021 - May 2021",
         points: [
-            "Developing and maintaining web applications using React.js and other related technologies.",
-            "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
-            "Implementing responsive design and ensuring cross-browser compatibility.",
-            "Participating in code reviews and providing constructive feedback to other developers.",
-        ],
-    },
-    {
-        title: "Web Developer",
-        company_name: "Shopify",
-        icon: shopify,
-        iconBg: "#b7e4c7",
-        date: "Jan 2022 - Jan 2023",
-        points: [
-            "Developing and maintaining web applications using React.js and other related technologies.",
-            "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
-            "Implementing responsive design and ensuring cross-browser compatibility.",
-            "Participating in code reviews and providing constructive feedback to other developers.",
-        ],
-    },
-    {
-        title: "Full stack Developer",
-        company_name: "Meta",
-        icon: meta,
-        iconBg: "#a2d2ff",
-        date: "Jan 2023 - Present",
-        points: [
-            "Developing and maintaining web applications using React.js and other related technologies.",
-            "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
-            "Implementing responsive design and ensuring cross-browser compatibility.",
-            "Participating in code reviews and providing constructive feedback to other developers.",
+            "Developing and maintaining web applications using React.js, Firebase, Docker, and other related technologies.",
+            "Developing an innovative startup educational platform for online teaching and learning",
+            "Implementing a responsive design and ensuring cross-browser compatibility from Figma design",
+            "Implementing efficient communication for CRUD operations using React.js and Firebase",
+			"Styling the application with SASS and Tailwind CSS"
         ],
     },
 ];
 
 export const socialLinks = [
-    {
-        name: 'Contact',
-        iconUrl: contact,
-        link: '/contact',
-    },
+    // {
+    //     name: 'Contact',
+    //     iconUrl: contact,
+    //     link: '/contact',
+    // },
     {
         name: 'GitHub',
         iconUrl: github,
@@ -186,43 +133,22 @@ export const projects = [
     {
         iconUrl: pricewise,
         theme: 'btn-back-red',
-        name: 'Amazon Price Tracker',
-        description: 'Developed a web application that tracks and notifies users of price changes for products on Amazon, helping users find the best deals.',
-        link: 'https://github.com/adrianhajdin/pricewise',
+        name: 'Full Stack personal financial management application',
+        description: 'Developing a personal financial management application that allows users to track income, expenses, set financial goals, and visualize savings progress. The app enables users to have greater control over their finances and track their financial journey. Built with React.js, Node.js, Express.js, PostgreSQL, and Tailwind CSS.',
+        link: 'https://github.com/Chloe-Le97/budgeting-app',
     },
     {
         iconUrl: threads,
         theme: 'btn-back-green',
-        name: 'Full Stack Threads Clone',
-        description: 'Created a full-stack replica of the popular discussion platform "Threads," enabling users to post and engage in threaded conversations.',
-        link: 'https://github.com/adrianhajdin/threads',
+        name: 'Wedding invitation website',
+        description: 'Developing a wedding invitation website using React.js and Tailwind CSS',
+        link: 'https://thao-anh-wedding.netlify.app/',
     },
     {
         iconUrl: car,
         theme: 'btn-back-blue',
-        name: 'Car Finding App',
-        description: 'Designed and built a mobile app for finding and comparing cars on the market, streamlining the car-buying process.',
-        link: 'https://github.com/adrianhajdin/project_next13_car_showcase',
+        name: 'Instagram Clone',
+        description: 'Developing a Instagram clone using React.js, Firebase and Tailwind CSS',
+        link: 'https://github.com/Chloe-Le97/instagram-clone',
     },
-    {
-        iconUrl: snapgram,
-        theme: 'btn-back-pink',
-        name: 'Full Stack Instagram Clone',
-        description: 'Built a complete clone of Instagram, allowing users to share photos and connect with friends in a familiar social media environment.',
-        link: 'https://github.com/adrianhajdin/social_media_app',
-    },
-    {
-        iconUrl: estate,
-        theme: 'btn-back-black',
-        name: 'Real-Estate Application',
-        description: 'Developed a web application for real estate listings, facilitating property searches and connecting buyers with sellers.',
-        link: 'https://github.com/adrianhajdin/projects_realestate',
-    },
-    {
-        iconUrl: summiz,
-        theme: 'btn-back-yellow',
-        name: 'AI Summarizer Application',
-        description: 'App that leverages AI to automatically generate concise & informative summaries from lengthy text content, or blogs.',
-        link: 'https://github.com/adrianhajdin/project_ai_summarizer',
-    }
 ];

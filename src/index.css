@@ -119,6 +119,10 @@ body:has(.card[data-color="green"]:hover) {
     0px 1.5px 4px -1px rgba(67, 83, 255, 0.2);
 }
 
+.name-logo{
+	width:75px;
+}
+
 .block-container {
   position: relative;
   transition: 250ms;

@@ -467,7 +467,7 @@ const Home = ({showHome, setFinishedLoading}) => {
       )}
 
       {currentStage === 4 && (
-        <div className='absolute bottom-4 right-4 z-30'>
+        <div className='absolute bottom-4 right-4 z-50'>
           <button
             onClick={() => setRequestedStage(1)}
             className='px-4 py-2 rounded-lg bg-white/80 backdrop-blur-sm shadow-md text-sm font-medium hover:bg-white transition-colors'
